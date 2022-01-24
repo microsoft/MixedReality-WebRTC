@@ -8,7 +8,7 @@
     <title>Add local media tracks | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Add local media tracks | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.58.2.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.png">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -300,7 +300,7 @@ private object _localVideoLock = new object();
 <p>The use of <code>_localVideoSource</code> from the <code>OnMediaStreamSourceRequested()</code> event handler is not protected by the <code>_localVideoLock</code> lock. This is because the event cannot be fired until well after the <code>_localVideoSource</code> has been assigned a new value, so there is no race condition concern here. And since <code>_localVideoSource</code> is not further modified, we avoid acquiring that lock in the <code>OnMediaStreamSourceRequested()</code> to reduce the chances of contention. The lock is actually not needed at all at this point, since <code>_localVideoPlaying</code> is also only modified in the current <code>LocalI420AFrameReady()</code> event handler. But a typical application will provide some UI like a button to start and stop the local video, and therefore needs to synchronize access to <code>_localVideoPlaying</code> and <code>_localVideoSource</code>, at which point <code>OnMediaStreamSourceRequested()</code> will also need to acquire this lock.</p>
 </div>
 </li>
-<li><p>Implement the <code>RunOnMainThread()</code> helper using the <a class="xref" href="https://docs.microsoft.com/uwp/api/windows.ui.core.corewindow.dispatcher#Windows_UI_Core_CoreWindow_Dispatcher"><code>Dispatcher</code></a> of the current window.</p>
+<li><p>Implement the <code>RunOnMainThread()</code> helper using the <a class="xref" href="https://docs.microsoft.com/uwp/api/windows.ui.core.corewindow.dispatcher#windows-ui-core-corewindow-dispatcher"><code>Dispatcher</code></a> of the current window.</p>
 <pre><code class="lang-cs">private void RunOnMainThread(Windows.UI.Core.DispatchedHandler handler)
 {
     if (Dispatcher.HasThreadAccess)

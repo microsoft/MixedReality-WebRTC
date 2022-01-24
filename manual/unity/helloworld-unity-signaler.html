@@ -8,7 +8,7 @@
     <title>Creating a signaler | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Creating a signaler | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.58.2.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.png">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -87,11 +87,11 @@
 <p>MixedReality-WebRTC offers a built-in solution in the form of the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html"><code>NodeDssSignaler</code></a> component, but also allows any other custom implementation to be used. For this tutorial, we will use the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html"><code>NodeDssSignaler</code></a> component for simplicity.</p>
 <div class="CAUTION">
 <h5>Caution</h5>
-<p><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html"><code>NodeDssSignaler</code></a> is very simple and useful for getting started quickly and debugging, but it is worth noting that <strong>this is not a production-quality solution and should not be used in production</strong>. In particular, this component offers <strong>no security whatsoever</strong>, all communications happening in clear text over HTTP, and <strong>no authentication</strong>, as all it requires to connect with a remote peer is to know its identifier. Do not be fooled by the fact that WebRTC supports encryption, as it would be very easy for an attacker to bypass it by compromising the signaler. Remember that any security solution is no better that its weakest link, and <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html"><code>NodeDssSignaler</code></a> is that link. It must be replaced with a secure solution when moving to production.</p>
+<p><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html"><code>NodeDssSignaler</code></a> is very simple and useful for getting started quickly and debugging, but it is worth noting that <strong>this is not a production-quality solution and should not be used in production</strong>. In particular, this component offers <strong>no security whatsoever</strong>. All communications are taking place in clear text over HTTP, and with <strong>no authentication</strong>, as all it requires to connect with a remote peer is to know its identifier. Do not be fooled by the fact that WebRTC supports encryption, as it would be very easy for an attacker to bypass it by compromising the signaler. Remember that any security solution is no better than its weakest link, and <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html"><code>NodeDssSignaler</code></a> is that link. It must be replaced with a secure solution when moving to production.</p>
 </div>
 <p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html"><code>NodeDssSignaler</code></a> component uses a <a href="https://nodejs.org/">Node.js</a> server with a simple polling model where both peers are constantly checking if a message is available. The server implementation is called <a href="https://github.com/bengreenier/node-dss"><code>node-dss</code></a> and is freely available on GitHub.</p>
 <h2 id="install-and-run-node-dss">Install and run <code>node-dss</code></h2>
-<p>The <code>node-dss</code> repository has <a href="https://github.com/bengreenier/node-dss/blob/master/README.md">instructions on how to install and run the server</a>, which essentially boil down to installing Node.js, downloading the code, and running:</p>
+<p>The <code>node-dss</code> repository has <a href="https://github.com/bengreenier/node-dss/blob/master/README.md">instructions on how to install and run the server</a>, which essentially boils down to installing Node.js, downloading the code, and running:</p>
 <pre><code class="lang-cmd">set DEBUG=dss*
 npm install
 npm start

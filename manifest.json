@@ -18,7 +18,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Argb32VideoFrame.html",
-          "hash": "C3G/GdvlYMi9TpE7ZaLhrPbEv6coJZjPhC2r5t3bcQY="
+          "hash": "1HstJ9ACVxlWXZtBIlaiqLUEBIe2YbGzbiqjAeMohEk="
         }
       },
       "is_incremental": false,
@@ -30,7 +30,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameDelegate.html",
-          "hash": "I++ErfmrQ360tH3PueYmgV1hhMRLhnqPU7jOTg88n6I="
+          "hash": "chVHc9YY0twuD5lF/gflJ2dIGpVkeiNTteg57KWe37w="
         }
       },
       "is_incremental": false,
@@ -42,7 +42,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameRequestDelegate.html",
-          "hash": "mxHiCFzdtQTNouHuIIeou/QVhcTWeUdDjSvqcN1Gsiw="
+          "hash": "IjC68c2hDUvMQzP9yYwdMwKgcraMRe7RICCTJEYkKVQ="
         }
       },
       "is_incremental": false,
@@ -54,7 +54,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.html",
-          "hash": "0nZd97FP+xVhCr6054bJRK/uCE82qEgkkUSZPwo/POc="
+          "hash": "Bma9tUhaZZbPSNhlQeUapVV9YPfItfxfxc3dK0z1Uw0="
         }
       },
       "is_incremental": false,
@@ -66,7 +66,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioDeviceModule.html",
-          "hash": "JCgw5deA0NWcFF/Sx3pJx3KMo53txfypqVJGHmJs4Lo="
+          "hash": "w7wIr56irW1Zi/6LrH4F6Czm5csF4qCbzKes72xACn4="
         }
       },
       "is_incremental": false,
@@ -78,7 +78,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioFrame.html",
-          "hash": "qSNaySxr6KhV+b23nHa4e3i0Iq5ihDdBZ7ogW1PZWo0="
+          "hash": "Akkyhxh0i+v6GC8rXD60Mw8vVzt0NSH7qiE//hr/yZc="
         }
       },
       "is_incremental": false,
@@ -90,7 +90,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioFrameDelegate.html",
-          "hash": "yaLIzDgY/dBr98H/QvqvYmPzx0dsjnRaNMjcZjqc0rY="
+          "hash": "BUAskgT/lvyCKI/sVS8+6HdGOhNIV7AYmr4Hfh6zU/g="
         }
       },
       "is_incremental": false,
@@ -102,7 +102,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.html",
-          "hash": "/jSldGRzq3MMxSrXFAyjXg6fzTZfYbb2biQY1QcPECQ="
+          "hash": "o+vvmx/sfGjY1BBuBKNPzwLSjxHfWvT2HYKQuRIaaGw="
         }
       },
       "is_incremental": false,
@@ -114,7 +114,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html",
-          "hash": "B95gec+qtNCCGQkUSYoRUdS395Qv2n33hJ7A11C9BQ4="
+          "hash": "exnJa+MvyeA/v88hXzEEGagsd6lJWtIhVt77YNWtAYw="
         }
       },
       "is_incremental": false,
@@ -126,7 +126,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioTrackSource.html",
-          "hash": "pTSjjCbJdM8R9brhU+KOesPkd1F4Vw43kU5rrYj/pRY="
+          "hash": "fntcI/ZWVwvghukblOVpBeKxqN4++1a3nrVChgwtXAc="
         }
       },
       "is_incremental": false,
@@ -138,7 +138,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.BufferTooSmallException.html",
-          "hash": "3nk4YyFVb8PhpSei/IQ8TYV0EK1C0DSQgZtI3bPSZ6E="
+          "hash": "XEdp/nevVp5ojk+0SqzDrhjbLTkO7qabHAFoHyVTUSg="
         }
       },
       "is_incremental": false,
@@ -150,7 +150,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.BundlePolicy.html",
-          "hash": "jDiQSzpCg0nbub6NX37/gQcYWqB/qpinGvrVZY1rK4w="
+          "hash": "BthW2zRr7cD/pQCxJUf/TOcyxjsPZELqWiJvAUhd3Vc="
         }
       },
       "is_incremental": false,
@@ -162,7 +162,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannel.BufferingChangedDelegate.html",
-          "hash": "42aA/C4jtVrP8Gw43Y4X13TXb1wo8sRxR/bYZ8L/AJA="
+          "hash": "BsTN35fdA8gHssoFMVRf8kUHpakByQIGTWVH42jiiOM="
         }
       },
       "is_incremental": false,
@@ -174,7 +174,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannel.ChannelState.html",
-          "hash": "AWqAL809MleQcPr0jQ73/poQo8gBUOWyF8b7FdVQjbc="
+          "hash": "HbZr9BjvQh1jBDw3avLwv3MoLbs/IApnT8bL7SatQEA="
         }
       },
       "is_incremental": false,
@@ -186,7 +186,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannel.MessageKind.html",
-          "hash": "8YXxxkqIfnaqbL9cDY07Mc7354Qq7dfzxRRPRoM5rJE="
+          "hash": "XidaNgHa8HZHVS1Q4WNnRX+7cofhtwN8jo+n4yeB42w="
         }
       },
       "is_incremental": false,
@@ -198,7 +198,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannel.html",
-          "hash": "aiKyoTFQqRmdH+00+2/pAMQd5HfTnpE3CzWTv21yUaA="
+          "hash": "NVqUByEPyHpEY2WmJjqBBV4hCNjexN1WI+H8lKrg03Q="
         }
       },
       "is_incremental": false,
@@ -210,7 +210,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannelNotOpenException.html",
-          "hash": "1m1aDPYcMMBl0Dw23PT1LO6fC76e2Fe3mfaN9Tia040="
+          "hash": "rsuXkZqhGyemMF4G6CwPpksvXGuF6oZFlXDefySzWb4="
         }
       },
       "is_incremental": false,
@@ -222,7 +222,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.html",
-          "hash": "xHXX+ZkOH0U7As5l1PVbm/WyeYnPSkJQhQz0l0TuXho="
+          "hash": "uvbV4wJjRF08dqCWJXYZkvj55NCDQRyZk09eWsEp0Mo="
         }
       },
       "is_incremental": false,
@@ -234,7 +234,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html",
-          "hash": "Zo+C4tRDgUImo6IyWJk4U0xNY3pCMDFsPCMo/1HO+7s="
+          "hash": "l7EP8fcu8ouL6P3MtlSdB42qb3c0zhDJtH2afqiOeao="
         }
       },
       "is_incremental": false,
@@ -246,7 +246,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html",
-          "hash": "BhjDAMR8xz91qq6UgxXNglaGlxlU2fr2DxR4GBHuXi4="
+          "hash": "DcC6pU3JGFfrCB9IV0xvv6gDvHYYYnokdK4j5Bz6PDI="
         }
       },
       "is_incremental": false,
@@ -258,7 +258,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.FrameRequest.html",
-          "hash": "FdtHCDjSdIKVfy1LHV1LHheyllzEUhSV0e4Njap+3BM="
+          "hash": "u+vlbQpiaZLXCpHllYyAy0zkLfRJewJH7mUl8xgCiSA="
         }
       },
       "is_incremental": false,
@@ -270,7 +270,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.I420AVideoFrame.html",
-          "hash": "PH+1+W6sIZu+xy1M36MO/fgbiONw1MIiVzJ4enEwFNc="
+          "hash": "SZ13nfPkrhWovNrJvfW//Awpknx2hXUH2cgr1PRIZWg="
         }
       },
       "is_incremental": false,
@@ -282,7 +282,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.I420AVideoFrameDelegate.html",
-          "hash": "MjsVM3HGHrT9HKeQMMWgclFHf3yF79A+9/u8Sev0DHk="
+          "hash": "17iysii63EZd2sof/WIHgdmMjsxuOFhEhzQCPpnjABw="
         }
       },
       "is_incremental": false,
@@ -294,7 +294,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.I420AVideoFrameRequestDelegate.html",
-          "hash": "9Rs/iecFWhMLoDQmGIAjVunGMN4gs4y9yB4Hj8X0Wgw="
+          "hash": "+t7bpTmcQ88REobLspERMwwNkZsYWoG33ihk/eeBIXA="
         }
       },
       "is_incremental": false,
@@ -306,7 +306,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.I420AVideoFrameStorage.html",
-          "hash": "laFNiUtUaAjaXLeOU6HRXhXkxqahUAJppWYC2aEG6Vg="
+          "hash": "d0SCfEyVy5OoMjFFac9ljX6GzvquPRRjmQNUv5gUQbc="
         }
       },
       "is_incremental": false,
@@ -318,7 +318,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IAudioSource.html",
-          "hash": "mKFWJtMXes0ZROPA8Ib+PfTynooMpXgp0NN7EPXa6dA="
+          "hash": "KacUZoDtA2pK0xrCC+h7FTKIb0JWNqlHpyxUdzjbasw="
         }
       },
       "is_incremental": false,
@@ -330,7 +330,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.ILogSink.html",
-          "hash": "xyk2YiFnjDepuebli5tWJ/FGwG3tAQSuwZ4coUWVo94="
+          "hash": "Lk/tNzxLJ+0SH6XfmlX2bpZlh1G6HXrO+l+hO1OkLZQ="
         }
       },
       "is_incremental": false,
@@ -342,7 +342,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IVideoFrameQueue.html",
-          "hash": "G2ZDolKW6YqNZIQfrhrl5ywyCisfvp2ZWgR9iDbaShs="
+          "hash": "o//IUvbMPeGvuYFT/OlYAvTr9ZlLQ0PrFvekBZakBe0="
         }
       },
       "is_incremental": false,
@@ -354,7 +354,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IVideoFrameStorage.html",
-          "hash": "ETH+y5/0e/h44ECzfVPsnI2ze6Ha5bj27soCVNMNl0E="
+          "hash": "TRE4Qvq9XjrMSM8VeRUo+ToxnDbAUlWEn2msv406kAU="
         }
       },
       "is_incremental": false,
@@ -366,7 +366,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IVideoSource.html",
-          "hash": "sRyO7dOZzcW9PXeHNWJ9guP7SdFiq1N8mbulChXCQAY="
+          "hash": "9B1dAZjKU5BEePKWaPfQDwjsZOCkUHhAyZa6Hz8VgmM="
         }
       },
       "is_incremental": false,
@@ -378,7 +378,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IceCandidate.html",
-          "hash": "91xQt6rL3XEWKu8iZ1HCzpYhXkao93XLJu9A0CDtUlY="
+          "hash": "E0SI6+VrbnEN8hymbj5QgtD6mtI5IGmSe60JbLgJFL8="
         }
       },
       "is_incremental": false,
@@ -390,7 +390,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IceConnectionState.html",
-          "hash": "qXViFz7fcFNiESAO2N4hiJ+J3Et5LA4g8nKbYjgvoaM="
+          "hash": "1iXxjJJul3tWRpwWoxCBn82z1KtlV5vA3jqtqbAKlqk="
         }
       },
       "is_incremental": false,
@@ -402,7 +402,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IceGatheringState.html",
-          "hash": "DiZaQwuUOz0+aK1xo7pW1gQ3RcUJLAYzLRHsIme+lfE="
+          "hash": "v/W+SyRO3qhnFUWL7sBnalwraGc0OONIdVHBIteqKvg="
         }
       },
       "is_incremental": false,
@@ -414,7 +414,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IceServer.html",
-          "hash": "/U6XIv6PGVCk8EjwocSu72cMx/jki/DGBYMoriMOJoQ="
+          "hash": "YZZLkNEp77XIDPbzjPIH97ghOXvDaxnBYkfWhebnYvc="
         }
       },
       "is_incremental": false,
@@ -426,7 +426,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IceTransportType.html",
-          "hash": "lZZdB5kVNEnDsLeeTWAjyqi5/9YL2tHhnoT9e1duj4g="
+          "hash": "3KUBRxCAptpEBwYO7xv79BKtDC4mY9+fAoWhI6g/Kc8="
         }
       },
       "is_incremental": false,
@@ -438,7 +438,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.html",
-          "hash": "V/KTWnS2+Kc8Vb1E7NxO9iCt0lTXW1LD+nJxiwLEkN4="
+          "hash": "4+n7B0oGoozAWDttKaLOR/nPfgaBPbRjlotUtv9l04g="
         }
       },
       "is_incremental": false,
@@ -450,7 +450,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Library.ShutdownOptionsFlags.html",
-          "hash": "+p+y/cBI3gYNEnuEa8ssmM0hPtT7EOgEhPcL1OL/X5Y="
+          "hash": "GMyBaAz7rAsgg74J1Afc5ZrWNj6HpXv7xR2rZSbeNd4="
         }
       },
       "is_incremental": false,
@@ -462,7 +462,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Library.html",
-          "hash": "Trsfbu5L925foUfWUWYP6WtW+ylvRVuywq2CWQ8QYzk="
+          "hash": "b1Ft8BAOoHJZaepjm7+yL03t2ivnCvddSfSbBHMmmEw="
         }
       },
       "is_incremental": false,
@@ -474,7 +474,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig.html",
-          "hash": "S/MzT+T74Ai6hug1WCsIvIPajJcuOMvav0zxNYOxQSg="
+          "hash": "gt56EH9F/Xy87ja7l1prxqb4zp/2Tzjc10mCqcQIvVI="
         }
       },
       "is_incremental": false,
@@ -486,7 +486,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalAudioTrack.html",
-          "hash": "ID+7e41LH4uj9Nwa3J45p/S4RZMkFf/3pnv14FHd2TI="
+          "hash": "zxdxG6zpqUpI9CRs+Vi4WNZDwRRvN3RidcDZxjTq3Pc="
         }
       },
       "is_incremental": false,
@@ -498,7 +498,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalAudioTrackInitConfig.html",
-          "hash": "E+H3/QIGmZH51YYk4oG8A7vSNibW6dxwhKm5GYT/lnU="
+          "hash": "MQoRv6JoRcuLjwqy4vmajJ9MMaIW8bxI4AGzZRLAtnw="
         }
       },
       "is_incremental": false,
@@ -510,7 +510,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalMediaTrack.html",
-          "hash": "DGj9/vokUZy0kOJuHcDsja8Mqmeiuk+b46tiCJNDHNA="
+          "hash": "OlJslHvYUui0JfOvUjy8z/Hp9oWy9AP0VQ0dC8VFyuU="
         }
       },
       "is_incremental": false,
@@ -522,7 +522,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig.html",
-          "hash": "ScSSm8p5FBW8hJlxZ8b8oluFWFFA6/Vw5/YKXtPIeUo="
+          "hash": "BdBEzTW01RUoVSZ1PeiOxmWtUSMj4awRbcF9nAKJpXQ="
         }
       },
       "is_incremental": false,
@@ -534,7 +534,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html",
-          "hash": "y1RiUZxrjvLyy1BP77vSS5HDZDi9SQChvuEasCn7sn0="
+          "hash": "YnLjDK6s6qkFpoeoTS/cQV/CW9PeD2Id8O4NfYcfjiQ="
         }
       },
       "is_incremental": false,
@@ -546,7 +546,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalVideoTrackInitConfig.html",
-          "hash": "e0p9QDX3N9TwIeaaU9bZINHptIYV1pWT72at06cTE8A="
+          "hash": "mzhleEpq1PRnDFLK6NSqE9d1USSkKNUQBdxHWyrKvU4="
         }
       },
       "is_incremental": false,
@@ -558,7 +558,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.LogSeverity.html",
-          "hash": "2H7wT5ZUErPxVM2hyWDDT+cgHCGEQ2FZVgl8Y5NKYCg="
+          "hash": "6mTxBu/wi/xR0NNJMWNdUcGpxWks+8iVEnPul9HhtzM="
         }
       },
       "is_incremental": false,
@@ -570,7 +570,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Logging.html",
-          "hash": "+nvROebZKxM2DcFoJpiMPJOjtj3cIWk0sFhljssUk2k="
+          "hash": "PfYbGCr/Zgb1ycREnXbiW9OT26jCx/mClXb46CRhOAk="
         }
       },
       "is_incremental": false,
@@ -582,7 +582,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.MediaKind.html",
-          "hash": "ETqpN/qYCZ4RbCegIN/JRkmCYoMAbWPiHyIRhsKLfJg="
+          "hash": "Etxuf/oTtMZjUwbklN+Gii7w2TZod6OVizj6ajTJIi8="
         }
       },
       "is_incremental": false,
@@ -594,7 +594,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.MediaTrack.html",
-          "hash": "63qNcXVp7GNrF8lc/CEYYF+0MJW3qUK1E7xAOMef23c="
+          "hash": "xSVx9vu3HPiKclOLXKo3/q6OOUPIg8jhGDEy30aDktc="
         }
       },
       "is_incremental": false,
@@ -606,7 +606,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.MovingAverage.html",
-          "hash": "bLxa8L/o/2Vo2X6T7GGs05jKQsMiUBSb4yznJrlGxow="
+          "hash": "I7lg9xR/H4xV+qjthnkePkiwA7c5nHCDICjtYVI49dQ="
         }
       },
       "is_incremental": false,
@@ -618,7 +618,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.html",
-          "hash": "i8j+xphOIV98x8DWDfv8U3CzJZIzz476KrH8/duCeT4="
+          "hash": "Q5RTIwWZ2VZ/ilkxh9cb1gI5KV8N7fz7CttDEVHit70="
         }
       },
       "is_incremental": false,
@@ -630,7 +630,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.html",
-          "hash": "vDSlg5rit42DucxHNAj9U2f1o3oDXFfROVkBbuPG0Vs="
+          "hash": "SAKKJUYkwtYoW3EfOrUoUX4T1rF2ww9bVD0BoZnz82w="
         }
       },
       "is_incremental": false,
@@ -642,7 +642,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioTrackAddedDelegate.html",
-          "hash": "mxUU9DbSczhUnUZe8Y/xZ1ArZcode20wG5mvviL31xw="
+          "hash": "Pmz/ydv3RJPeZ/idtOFhD7ZBcieUxdu9/knTenjRJCo="
         }
       },
       "is_incremental": false,
@@ -654,7 +654,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioTrackRemovedDelegate.html",
-          "hash": "E0oskmFvrPVraSmRrBcn/Ka8WATYaXB0DbY7hyFthVE="
+          "hash": "ORcNNQxlmeIDfLsalhEYAVskCl5jkJJcZvWHPZU441U="
         }
       },
       "is_incremental": false,
@@ -666,7 +666,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAddedDelegate.html",
-          "hash": "7OLeUj+W4Y65Vb1Ms3J1BzI24R7/O2tRsYTpBB9dcnY="
+          "hash": "tKI3p8OvuzqkplrofaW6avawl6PN/WVeDhebC6jaDIA="
         }
       },
       "is_incremental": false,
@@ -678,7 +678,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelRemovedDelegate.html",
-          "hash": "mFAvcDTWk+rr9VoDh8SV/tUEues+qfafgIeN1gErMiQ="
+          "hash": "ZSmvaGVsrIsvZJlbDVNhPzU+FV2Hbvpu648nqFGd0uo="
         }
       },
       "is_incremental": false,
@@ -690,7 +690,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.html",
-          "hash": "UT01KYtpncXFF7MmS+aSM2HVKD56YsiKfwEo6OYY8Bo="
+          "hash": "ai0HXHAin33kzl4/XUrRKr/CjLCKNemsijF4q3TmoEs="
         }
       },
       "is_incremental": false,
@@ -702,7 +702,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.html",
-          "hash": "ES3tIjLbtsbPLKqd/OJUDxu/NcvGj0vAKvZz5c53kyk="
+          "hash": "vyxcvRPMUKo4d3oSdqjKNPGzElpWD4L+GohcBNAg1wk="
         }
       },
       "is_incremental": false,
@@ -714,7 +714,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.html",
-          "hash": "KiAtUOssOLpcGN5Tc9y2SYmpBi5dPSqlwV+5VBhm6fY="
+          "hash": "wJT4j6A3x8QB31oGuzHOC8WSESeUEVB0aNOF7ADhnCA="
         }
       },
       "is_incremental": false,
@@ -726,7 +726,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.html",
-          "hash": "CsLViOuGO1wcdvjEvB2IZTbXOLPqsaQgu7nRXKdGYJY="
+          "hash": "itg7E8G3lqsBgQP9yaZ4LsQzKmv93dVvTr5anmBfgtc="
         }
       },
       "is_incremental": false,
@@ -738,7 +738,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode.html",
-          "hash": "Jr01EIVSRyj1f7XnawoyxrTRrm0DkkibXQN8UPjEG1g="
+          "hash": "pLhCZcgI8uQSsbIyy0aq8EY852w+6xaHDV8V3WZX6pM="
         }
       },
       "is_incremental": false,
@@ -750,7 +750,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.IceCandidateReadytoSendDelegate.html",
-          "hash": "CrleN+vVBdXDk1dt2zjn1iQxJw4DZ/iLeN+DoKgE+VY="
+          "hash": "oambPi8ryki8HXV+HJ6TsWTPWbEuRJDdtSjq4D974IQ="
         }
       },
       "is_incremental": false,
@@ -762,7 +762,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.IceGatheringStateChangedDelegate.html",
-          "hash": "tH76CS+3GgIRxxdJE1VEjbaNpYj11NOXOhhYMPKovEg="
+          "hash": "8dhU4xlowtou64AL9Fk9RSeCHKDCrHO59WRKLcweLxg="
         }
       },
       "is_incremental": false,
@@ -774,7 +774,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.IceStateChangedDelegate.html",
-          "hash": "uLPCmn3+VyI4n5Bcg4cRoecTqCWCD815k+TydJv0AGw="
+          "hash": "ZJkFSAiK+ezcUCNXLlGE18wnHuhsrAN4ixqKM47fmqI="
         }
       },
       "is_incremental": false,
@@ -786,7 +786,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.LocalSdpReadyToSendDelegate.html",
-          "hash": "bfpU3VaHL/bcL8l9EaXTX9v456DcQS9AP1mqG3UbFzE="
+          "hash": "lm4t6x1qrJn5BUPynZZjaR0iG4gRD9R2RyDEZrwcJVA="
         }
       },
       "is_incremental": false,
@@ -798,7 +798,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.html",
-          "hash": "CY3u6n0mwEDdsT16YHux7RmsdewDnkvc2ayKC30byF8="
+          "hash": "BnX/f15y0EWrvKhOmffKprPcqPZ9DFVPLZaKUIbzw2Q="
         }
       },
       "is_incremental": false,
@@ -810,7 +810,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.html",
-          "hash": "IHKai3vyYiXvEn2SoDWKPS/qEvU/D57lRd/99VoG73U="
+          "hash": "XRxT3trikToC0Xrgi8hSFU7JlZxjNbgHCdQh0qgpil4="
         }
       },
       "is_incremental": false,
@@ -822,7 +822,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.TransceiverAddedDelegate.html",
-          "hash": "8RgsmTOQsTTIXqvSlCDm09xfoVxW6v/PppJTc3jFOx8="
+          "hash": "5yb4hfAKShzxIIiv+rlQKNYy6YUX4/3rfO01LfioTk4="
         }
       },
       "is_incremental": false,
@@ -834,7 +834,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.html",
-          "hash": "2ZEKQfLBVkbXDIX7exnOZPN9jxXBewtcnRO5g761AxA="
+          "hash": "NhEL8WEK9Pnnx4j80TVOK+imFkUIwETtbGz0izekasU="
         }
       },
       "is_incremental": false,
@@ -846,7 +846,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.html",
-          "hash": "gbdgfrCO2dJOZ3f5gOQeWmLIv1OgonmhgCfuwGBJJwU="
+          "hash": "z9uTMg5CXQUbLWlxBhSUicpXKsC/UQGpTI8sHUpknqY="
         }
       },
       "is_incremental": false,
@@ -858,7 +858,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.html",
-          "hash": "+Eo9O81/2AxmpvvyjCFQo9LYvatEMkWdm7/a+tRoRLg="
+          "hash": "jnT7Tmi8RttWlsJVFhZJXMW1BedK2+GcB3PuDI9AwRc="
         }
       },
       "is_incremental": false,
@@ -870,7 +870,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoTrackAddedDelegate.html",
-          "hash": "aVYFa1hbrHgfMOfLtNFpdFVuZR1ewFf9lJzGHse1G74="
+          "hash": "jw0iNd67Pg1efPOqx0ATpgbZtYX61rp8hurnZdE2HLY="
         }
       },
       "is_incremental": false,
@@ -882,7 +882,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoTrackRemovedDelegate.html",
-          "hash": "TkIas71z9tQNY7v6SaQlLbvtrPTGAV6jp6PneUzpgcE="
+          "hash": "SVsqDt68tIh43onTMIlPfaJtMELdBy1u+jhD/mcUS/I="
         }
       },
       "is_incremental": false,
@@ -894,7 +894,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.html",
-          "hash": "4YBL1bzpS/pSbiidooN0DvyMu4Hta1HoYftIl7WucpQ="
+          "hash": "mKU0eS7YOs1jJQFh3zqa8TAHNuLGwd60PpQUYr6D/7s="
         }
       },
       "is_incremental": false,
@@ -906,7 +906,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.html",
-          "hash": "L83cZ3hQDlvzIjiF7XhSrAr/kKT+VIy8s0k2FX8rwl8="
+          "hash": "q2tgFnwxvty/iNTzKYIU93gCJRMBD421BK2MpVP5/Lg="
         }
       },
       "is_incremental": false,
@@ -918,7 +918,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html",
-          "hash": "2hJCXAb9s07RES2/QOTIV8tRPOoWvKs3HxUFEk4iKXY="
+          "hash": "xeIPJ1/3RN2xr4OZ3rz3nEphmQOR5h+jyVUnbrV1xNU="
         }
       },
       "is_incremental": false,
@@ -930,7 +930,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.RemoteVideoTrack.html",
-          "hash": "TZMid4D7x5c0D12A05LNn82OKPfrGqM/h/L4q81xHWA="
+          "hash": "huxRZyU+mu6OcI8w9JP0CvFGYWfbErzWp+GIN3dPflk="
         }
       },
       "is_incremental": false,
@@ -942,7 +942,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.html",
-          "hash": "9IiprjxRJ9DFP/2+j2w+CiiTxhwYzJMhFkJxG936RSU="
+          "hash": "cPIVAGrb/8YmwVI6LJD5dvXoHTPgSupjYv41rTOP3fA="
         }
       },
       "is_incremental": false,
@@ -954,7 +954,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.SdpMessage.html",
-          "hash": "uVXrAeiJBYcu2LFGbdw1ht14vbqHxTNRu/LA9d4sVoo="
+          "hash": "s9wDWVteZ0y2HqxbA5ELZFr3XlZA0mBJJFzrDA96Qtk="
         }
       },
       "is_incremental": false,
@@ -966,7 +966,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.SdpMessageType.html",
-          "hash": "pnJG8Zri8AI9bFSwVelqiBTb+H7ELk6giYSDUrwG/N4="
+          "hash": "O2i3P0TTObxV+E2NJNuPgZqjlzY3xXmzGGZ5mZuXdZk="
         }
       },
       "is_incremental": false,
@@ -978,7 +978,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.SdpSemantic.html",
-          "hash": "OVVuUNv1OAn6UAc4+b6H89t/3JkmUlbkqq9AZLWjqes="
+          "hash": "oLegH7wivvvNG5ezICH9P4KuzLYNAQ4NdYrW+16acb4="
         }
       },
       "is_incremental": false,
@@ -990,7 +990,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.TaskExtensions.html",
-          "hash": "GXGqkGDwjuxr5pzfFhC3T9OGlLrr+SB9sr8j3SeQBaQ="
+          "hash": "RCCKIQZ+Tn3EzMftzcRwW1rjA8V2PJNdepCy7a4vpso="
         }
       },
       "is_incremental": false,
@@ -1002,7 +1002,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Transceiver.Direction.html",
-          "hash": "V+H234e/VQC2/morZSbXQyJgByY9gnPoDtk5ashx9o4="
+          "hash": "JB2+L1z1YmQwmkg4efhudmJ+Zi7k/M9EKQw0RDV3wbg="
         }
       },
       "is_incremental": false,
@@ -1014,7 +1014,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Transceiver.html",
-          "hash": "9icf18rH8Wydt6i1OOWl/Eb9ohVKrLeFDkm3OfOk0aI="
+          "hash": "BBKWU/+95+5FFrZKnXsiLw1U9FmECWKcNWyVS/enra4="
         }
       },
       "is_incremental": false,
@@ -1026,7 +1026,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.TransceiverAssociatedDelegate.html",
-          "hash": "KIew27CtAecCgbOIyMiJF51zxbzJ9fViW/SK4gw5Zqc="
+          "hash": "zPZJfF97kOXGleacJMZ9eaDsI0U5a6/XiJlihrje0Eg="
         }
       },
       "is_incremental": false,
@@ -1038,7 +1038,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.TransceiverDirectionChangedDelegate.html",
-          "hash": "AJbicBcJYLvGoGrfmi+Y/9DB80ShG2SDAsubXUivpdw="
+          "hash": "GBS7v5o/BPGV5cnQKJWzT0YYTKNEMVMcm/RNCpwrC0E="
         }
       },
       "is_incremental": false,
@@ -1050,7 +1050,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.TransceiverInitSettings.html",
-          "hash": "+1RFiiadwydOWEzFgNnKd5KI72GaRzVRHbFw0hq0//0="
+          "hash": "oxdkfqqegpN7O5VFSCs9CsyADc3oDIMIkEIMZrEL0N0="
         }
       },
       "is_incremental": false,
@@ -1062,7 +1062,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Android.html",
-          "hash": "BsyUnhUVPp8B7vG6etbxF/lBPl4Cyo8wZYC17/J06Hc="
+          "hash": "3gWGwLz8SRZ8sQ6qkSjF9hS3YhPgiMjLpn817jHHJqk="
         }
       },
       "is_incremental": false,
@@ -1074,7 +1074,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper-1.html",
-          "hash": "wHDyz54bp4yNqIm+MESdIkPW5rWhbXbHe0eILldJDWo="
+          "hash": "JPOeHpACPeRT9a7MRm2NGGr2pxTbar0zQnveJod6IEw="
         }
       },
       "is_incremental": false,
@@ -1086,7 +1086,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html",
-          "hash": "rORg/rNMZpBaRUThBShPPh+5yqdxLSQA+IYWIdJUIwU="
+          "hash": "IUUGYC6xysvnJT9Xzuyy7rbg2wMY0Y2RDu4s/r6Zq5Q="
         }
       },
       "is_incremental": false,
@@ -1098,7 +1098,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioRenderer.html",
-          "hash": "YxhRzv1powWEbbzMIo9j+7yS3MfocE9iE09L3ScPE+k="
+          "hash": "qzJhp5Bbqikh8/Ro8JPQv057erCtMNvU6hu6eaUsXlQ="
         }
       },
       "is_incremental": false,
@@ -1110,7 +1110,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioStreamStartedEvent.html",
-          "hash": "ji/GD5ft0cuXDGx1F+nLxHMNafVNrR1cUK2y0/M8DLs="
+          "hash": "pHdy1UTrDccaH/LYfjXeN6wxaorJgsnOlkZtsLZJXfY="
         }
       },
       "is_incremental": false,
@@ -1122,7 +1122,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent.html",
-          "hash": "mPc0MYuGeLaRtHlvRMN9JYtxR1906qwI9RVIeMJKkSo="
+          "hash": "EnhoBAoLXo3a0SjnHOF8bX/KEiq5idZTLCETW5O9jRQ="
         }
       },
       "is_incremental": false,
@@ -1134,7 +1134,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html",
-          "hash": "1ZGuNXox1vfYcqj01fzu665CeD9neztx+8YgZOTDlag="
+          "hash": "J4MhXasYU1oR+xwEvwmK3tJP6wRn5oD/Q00fHjYQDKc="
         }
       },
       "is_incremental": false,
@@ -1146,7 +1146,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute.html",
-          "hash": "4pDn3YDQLEgOSoBmDGdoiT3aqEhgFREF+jiw9OaFmm8="
+          "hash": "MpRsJhFWzVQrzGVUo2wtsF+8BHOnPPpkOF/1SdEgBxI="
         }
       },
       "is_incremental": false,
@@ -1158,7 +1158,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.ConfigurableIceServer.html",
-          "hash": "jbezj/t0nUopV2Cbp2icGEWEn1q+2pIVeaNTJoRLYL0="
+          "hash": "AuIe+JM9N6NuuT5+HZUsEaMOvo05nKqelmFXJmeW/hY="
         }
       },
       "is_incremental": false,
@@ -1170,7 +1170,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html",
-          "hash": "W8FgmmLIvY9yJt42jQETcocvfdLTbsKIBFuaSWQb2CE="
+          "hash": "5L/OksmRp/d/cybLdirMPwRbIX5YU6NIuiWiJS+rCb8="
         }
       },
       "is_incremental": false,
@@ -1182,7 +1182,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.html",
-          "hash": "w19xWM6Xc9QAy/dOQO7S4niRitKYfxdnUqF9Mok2QKA="
+          "hash": "p4UDksvR8KNa27Hsn0D5/k/YsGwZ5mf0+p1+YI/QI0g="
         }
       },
       "is_incremental": false,
@@ -1194,7 +1194,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.ConfigurableIceServerDrawer.html",
-          "hash": "nlWHMcMpyTLVHDz8cvXs4UYFZ4CEniRLZTllIDG08L0="
+          "hash": "jy+bEInKdm49wblqXMR+Q1TuhXiCEk82CP43JnZKc7w="
         }
       },
       "is_incremental": false,
@@ -1206,7 +1206,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.MicrophoneSourceEditor.html",
-          "hash": "uB8BizLOiK69vOsQH/hNX6wq3s3zSGE9VQWLmfG6g2E="
+          "hash": "m001dJhAtrMf/eNPgYlL8opEfTTIge8RrU38XuXgjf8="
         }
       },
       "is_incremental": false,
@@ -1218,7 +1218,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.PeerConnectionEditor.html",
-          "hash": "+yaI6XQQqf9MU84yA4blKZ6YgATkiHrtn9sVQRJK9og="
+          "hash": "fOq9ALjalMxRYuFsQCwAAMHAl+k66AS+u4sxQ0kgZS0="
         }
       },
       "is_incremental": false,
@@ -1230,7 +1230,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.SdpTokenDrawer.html",
-          "hash": "Eibx/rOE87zJJ/5NeahLu2idoAusQv+RvagffxjcQT4="
+          "hash": "hKAgnmKYCCEEbnymRY37w4opYqkPA/bxjytXQcNzJYA="
         }
       },
       "is_incremental": false,
@@ -1242,7 +1242,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.ToggleLeftAttribute.html",
-          "hash": "umcM93uGyXgP0dbRTV37f4bF/TKGgsiylJ74FfssII4="
+          "hash": "CFF8wFGMiGMJ28gZ9ZfV0Z6933aZ97Ec0hWp1iDAHXE="
         }
       },
       "is_incremental": false,
@@ -1254,7 +1254,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.ToggleLeftDrawer.html",
-          "hash": "YASYRPLKTZFEWmZpoHfsnI+G9r6g7OoyxRmg+PlgJv8="
+          "hash": "y0qafmKgN9PaSliLxQuJKvEI6s35iJeZR7AVwM8BeLQ="
         }
       },
       "is_incremental": false,
@@ -1266,7 +1266,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.VideoRendererEditor.html",
-          "hash": "JeJVH3iRKNX134lees6t8bCENVoupMRgW354W+iuwUQ="
+          "hash": "GEAwhrwXa/Wcsl62+87yS1GPilK0k2fXe0JwvttKxng="
         }
       },
       "is_incremental": false,
@@ -1278,7 +1278,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.WebcamSourceEditor.html",
-          "hash": "NAx4fz2s5SlkjiN6X5A4QN6FlJ143Uof4IL4h2+xCtg="
+          "hash": "kshkHCjHuawwjHx/otanE7BQPduVWglh4LDy8MPCW74="
         }
       },
       "is_incremental": false,
@@ -1290,7 +1290,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.html",
-          "hash": "1JjEHphkL1pvKN8jhMSAD4GA6o44DQ0WJXGx1ggxqHo="
+          "hash": "NanHTZ04jmbud0+I6S2aEzPYR3iu9g6yy4yq7Fj5FQQ="
         }
       },
       "is_incremental": false,
@@ -1302,7 +1302,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.IceType.html",
-          "hash": "hwBhnTx97ZzRSYoqTudG4G6qhTtjfcbUhpJTZFuLRIo="
+          "hash": "OscJAVfzVivzNbuLeQ49bRga/X+UWDvTdn2xHHm00iM="
         }
       },
       "is_incremental": false,
@@ -1314,7 +1314,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.InvalidTransceiverMediaKindException.html",
-          "hash": "zqj1dcSXl2/Mal63JnCFrvBXDXzq5p27T+1fOryAT6Y="
+          "hash": "isEb6SKpAAXapeRZVe5X1xAUAKEXwUa7qpSwyOvYcbA="
         }
       },
       "is_incremental": false,
@@ -1326,7 +1326,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.html",
-          "hash": "L0Ra27LoOc3axdvXqPn3WOxPSwNdgVTBc21X3cgGWrs="
+          "hash": "sNbs1yUZFo4hV5r0zXvN4QO+xBy8drCdDbIqdUXargY="
         }
       },
       "is_incremental": false,
@@ -1338,7 +1338,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSourceFormatMode.html",
-          "hash": "CW6S6Chr8fZOh8Pf0vT7ksW6vIlls78H90YGjar2cvI="
+          "hash": "9oI2G/yMXXexw8Z3rLPbEsOEbTeqOyFTLhaLZuIuCcw="
         }
       },
       "is_incremental": false,
@@ -1350,7 +1350,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.LogCallback.html",
-          "hash": "v5i4gwx8kSffIp+uy9ZehnUpfx5rYI6+Mf7HLFU5yUE="
+          "hash": "OycFWdhAAAx76tiR4rzVwIAfGxmpMrnaHi61OrPYinA="
         }
       },
       "is_incremental": false,
@@ -1362,7 +1362,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html",
-          "hash": "5gSMTPQ3qAdymEdVOIst3k6aa9ASdvH1dbtqbxclNVE="
+          "hash": "z94pQsSaY4529lGyEvFq77OG9lXxod7Cl5mP9rXwIVM="
         }
       },
       "is_incremental": false,
@@ -1374,7 +1374,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html",
-          "hash": "z+WkQ4fC/AgXc227rD3U2VBgbJLygsDpPb5LocBP1Zw="
+          "hash": "13ITLgV2xrBmGUAceVfgGJcxGOsEBVZ7T8CCFuXDnbk="
         }
       },
       "is_incremental": false,
@@ -1386,7 +1386,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html",
-          "hash": "9cvD+HjzByStWVFPInhGupkwdYFVNhNV5Uu/sPmumxA="
+          "hash": "UW38CP8q1SUS9Y6eciUrvV7FCUNbwe/uWoeBO1+mOfQ="
         }
       },
       "is_incremental": false,
@@ -1398,7 +1398,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html",
-          "hash": "jjDFNJn+9YPtTjTBeM4R6XQlIE9Azej4GSC9FJEg54I="
+          "hash": "h9uVDekdq3MAmTJDFxctB8yNWcsEiW4QM/hqspnAglk="
         }
       },
       "is_incremental": false,
@@ -1410,7 +1410,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.html",
-          "hash": "m3wTALLG62PZsiWOZbT+f2vZ+TNuo2P9DblQOUG1Lag="
+          "hash": "uYt0tj66vT13aq4DTsX6eKXkXMWXkk3MhTUT1ll8joE="
         }
       },
       "is_incremental": false,
@@ -1422,7 +1422,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html",
-          "hash": "2WFIwCX2/K1lV+hfKXHIH0XGJUqRF49CN770kOPeG80="
+          "hash": "I+bFC+Eb/pWZ+UvHIckRAyt7Oo3emnygP2O69L6ktOI="
         }
       },
       "is_incremental": false,
@@ -1434,7 +1434,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html",
-          "hash": "aena93mvYteSAg3ch5WcwMqZ29uErWjJttUgwZrK5Qo="
+          "hash": "huoNpSE9Qk9I0wBzLDu4fmudf8kwdyWsfJG/gxLliIM="
         }
       },
       "is_incremental": false,
@@ -1446,7 +1446,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html",
-          "hash": "I/89bnlsDZJJLZEnjflbbQJ+2Gfx4FWIYdIjgKjquvg="
+          "hash": "416BzqBxS+8eud0C6JRVBD/yPKglSq9w6THRdoX30js="
         }
       },
       "is_incremental": false,
@@ -1458,7 +1458,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute.html",
-          "hash": "fdOO2k7zq94pCB5tjIOqQAgfvkjGEbOPSQXAwqKfd7M="
+          "hash": "bF71EorCq8XzXo6A6kRlTn3kHh4+MKayo2MvnuwccXg="
         }
       },
       "is_incremental": false,
@@ -1470,7 +1470,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html",
-          "hash": "/ZHA3i8GwnlPHlWtEk3QPLKzUdo44bvGAdbhrSWlHVM="
+          "hash": "wDbclXkFTQjA8bInNOKVGiZoiZVmhFmmZezenwLZsIk="
         }
       },
       "is_incremental": false,
@@ -1482,7 +1482,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.TextureDesc.html",
-          "hash": "ZehBFEcir7Co3qCQxd87l7rXahNK7jAm8uellAOjZRc="
+          "hash": "9SHFoRPQA6N6sC7W7CHTcGpN4V6fxipJT4Zq1gfTD9Y="
         }
       },
       "is_incremental": false,
@@ -1494,7 +1494,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.TextureSizeChangeCallback.html",
-          "hash": "qkWAcjV3OUOQ9ocqV4sTeJF77H1RcHxAx8QqKYTMLog="
+          "hash": "YXv2DIIeaS8eaYTyF4tGNdpYZRBtpidr8jQ07UFJ6mY="
         }
       },
       "is_incremental": false,
@@ -1506,7 +1506,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html",
-          "hash": "ykEu9dEzGefrWZ+AiTz/DouHaOd3sMmkWv8T3QWrr6U="
+          "hash": "TuQ9Ky+5eX7YOeQOACy6PqvHqtIMn2phB8wV3/HHUI4="
         }
       },
       "is_incremental": false,
@@ -1518,7 +1518,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoCaptureConstraints.html",
-          "hash": "vZhsr1Nc7DvbwhRecqH+Z102R/Q4AkQm0Fm10d77jc4="
+          "hash": "W7/ZGnlYbya0LLFh6q5AouFsENdA5YiHgKk2RUAPJxA="
         }
       },
       "is_incremental": false,
@@ -1530,7 +1530,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoKind.html",
-          "hash": "+LW9Nj0qhkqRYUf+0PZjEXvq4N2McdeUD2UohnWGQnc="
+          "hash": "UCRfwLaYs6EWqfHkKShmvMCQdL1gIUObR2ZKtl7UcQs="
         }
       },
       "is_incremental": false,
@@ -1542,7 +1542,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html",
-          "hash": "/z7O3wQXwqfvEvy6awChdGlQ5THBEWp3TTqFc78ADL4="
+          "hash": "+3FjivC+9trEtcgWbfyrCVSAxw0opckzgb2U/+Kl440="
         }
       },
       "is_incremental": false,
@@ -1554,7 +1554,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html",
-          "hash": "CgFJp540lvPxFFTYBXuzLmualQn22NTC8i4Qmm+Zw0A="
+          "hash": "UN070idODkd66nXeeivey7ZRvJlAiRmZB14C5wNbwnE="
         }
       },
       "is_incremental": false,
@@ -1566,7 +1566,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoStreamStartedEvent.html",
-          "hash": "/4qC+MEW0RCJqn8sgDStmFzS96Ektj+7+zurv6MjUHE="
+          "hash": "Jr3KeiRXMU7n75HXNcC8NvcCgLY1X306bG98/Fev7W0="
         }
       },
       "is_incremental": false,
@@ -1578,7 +1578,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoStreamStoppedEvent.html",
-          "hash": "eqZlcZn53n1niOTE4MfA1DeFs6vyu8gnx1tALkXPdbw="
+          "hash": "4hbzp2RIChbIwWKx/9itmTRXDKJ68Xa7bt/mVbkk2+c="
         }
       },
       "is_incremental": false,
@@ -1590,7 +1590,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html",
-          "hash": "DBXFqKy2kgwJXj4uzxhiVR1xY2qCAW0a5y/s94PHf1c="
+          "hash": "BwQTBqt8sE2SMsMiUSGfjd8q3T4fP3wY3cokJytgx0g="
         }
       },
       "is_incremental": false,
@@ -1602,7 +1602,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.WebRTCErrorEvent.html",
-          "hash": "klHz0Mhz43HNu+gpazhkyK5hxpocHkfnFEKt+3d0cCs="
+          "hash": "lvNSh8AfjA4pdc7/lV5ISJMWcdXep7nSGUQQK2b0YLg="
         }
       },
       "is_incremental": false,
@@ -1614,7 +1614,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html",
-          "hash": "SskuuPLm7RlQn1+GOL68ZRTt/RCI1kuyKVxclfLMz64="
+          "hash": "8rcYyW1oE0G2ggiwN0TtRyJaxLlhFI4Qdvi7oNU5R7w="
         }
       },
       "is_incremental": false,
@@ -1626,7 +1626,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html",
-          "hash": "gIUVSf6GRpAhbtonHLJyCOJEf0/asihGuGcz/vtoUQQ="
+          "hash": "r7kMBG77+OJv653tcZ2ARAiWgfopETRHzh0jTr3NWq0="
         }
       },
       "is_incremental": false,
@@ -1638,7 +1638,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.html",
-          "hash": "tsiuMUVq2x54aC9ZJIKsnVxaZk1Xryp3LS5z8i5cU2Y="
+          "hash": "JODlZsk//nuaGv7Lor8LszXu6sXVFCkpcfNpkEsTHfc="
         }
       },
       "is_incremental": false,
@@ -1650,7 +1650,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoCaptureDevice.html",
-          "hash": "uCcuQOT8+JlY7anrroLDrWMLFmxYC9h7jwy1TV5nHEU="
+          "hash": "EbeYt9rbd/SriDtyfg59rdeeVQ0X8aScSjnVZAe88DA="
         }
       },
       "is_incremental": false,
@@ -1662,7 +1662,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoCaptureFormat.html",
-          "hash": "cMEqVXOt4gc/Qxr+E3B4d0yCrWydcdq/vGGYJ9q1+N4="
+          "hash": "IauUSkSMEngFh9pi4YBosftHpA42qK+jvM4uUKpK9IQ="
         }
       },
       "is_incremental": false,
@@ -1674,7 +1674,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoEncoding.html",
-          "hash": "nVcSHgvBxahH7SAKRECVerVyZiauP2qnDHo6jWjm7og="
+          "hash": "4ydvHEKUGyehcqGBLvjuTFVhD9RN9cQwxkQyA/jqMfs="
         }
       },
       "is_incremental": false,
@@ -1686,7 +1686,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.html",
-          "hash": "myzl0TLz4FsQ/1ZbesjcVAJ104DiwBxg2PO3ztwVNUQ="
+          "hash": "pY2gWRdTGUPa+bteALp6XAuWfBMXnpiMsaJellJNusQ="
         }
       },
       "is_incremental": false,
@@ -1698,7 +1698,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoProfile.html",
-          "hash": "OF1O8qH7g7HStjlt+yhS0fLeHi5a8y+Ldvw82hwow5s="
+          "hash": "LtFaqUmKEPLEyfnAZg2lbd+q5AI+bE7adrTVXwzKMEI="
         }
       },
       "is_incremental": false,
@@ -1710,7 +1710,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoProfileKind.html",
-          "hash": "1ZWmOAJ7lxmH90ZndpuT4T4lYe7GbfJyMo+ZQW4smyI="
+          "hash": "V7oeAPYSBKNtLnvlTeNP4W1A0wZvDzRrhkRpqL/yodE="
         }
       },
       "is_incremental": false,
@@ -1722,7 +1722,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoTrackSource.html",
-          "hash": "4d3c+YQw9DdIKxdmup9l01Bl2rJwvo0fRy7bA1pgRm0="
+          "hash": "ya6WZDxpvUacNHjs2dpKO9vd6/24ELON8WmJK/DWWLg="
         }
       },
       "is_incremental": false,
@@ -1734,7 +1734,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
-          "hash": "2JqPNKAnDttefK58R83iRmFynpnxovomwnLF37lblCQ="
+          "hash": "Fy4Ds80vA2L8QpuXKn5rIbGgYydldvtkNGWnj+pxjVI="
         }
       },
       "is_incremental": false,
@@ -1758,7 +1758,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "2Z7cz9ISLR6CpEDEtNCBXvH6RHCLR7Mg3ceVxSI9DG4="
+          "hash": "YK5jOwXf5AQ0rESYse/1EraqoTkBErnsQXv5WJfETPo="
         }
       },
       "is_incremental": false,
@@ -1803,7 +1803,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/android/building-android.html",
-          "hash": "iH1NYLzlvGNyZsvqpc/pRtzPCJ0CT8fYmVHOx6e38aY="
+          "hash": "5xgbFkTlX38lFTkKxUus/y4YbUPdHSUU7BNVEv0h6ls="
         }
       },
       "is_incremental": false,
@@ -1826,7 +1826,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/building-core.html",
-          "hash": "UQ48nDE6XyVLt1JpF5OAtw0hwa7Md53fxqrxdYHp5JM="
+          "hash": "W5E0JE3a3EzBWj1KOEp8hqIO+/b8S2vNArXsW5gJBn4="
         }
       },
       "is_incremental": false,
@@ -1838,7 +1838,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/building-cslib.html",
-          "hash": "83KhkWvlgT6QNyQEpPJugzTr0cXHQu2sXek4yLYl33g="
+          "hash": "BGNmk8IINZl49W1IGafgKAjswZCQ1lJHkPd1I6eRqfo="
         }
       },
       "is_incremental": false,
@@ -1850,7 +1850,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/building-windows.html",
-          "hash": "//ChT1XEjoPG46aWkKB2Z7cWBPf6bi2GTmC+nHJLkLA="
+          "hash": "KxQwWJNtlwVpU6Ow0rWYy4gAGEJd4ZPtMyQGoZ+/oIk="
         }
       },
       "is_incremental": false,
@@ -1862,7 +1862,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/building.html",
-          "hash": "7/+6jwKW8XKzYmg5eSr2tfU5LmQFGvKc8tQkswhbCjI="
+          "hash": "pluF/BCZc6Ea1mQ3Xi9sCHvVFRuqlskFzPH4hNELLIY="
         }
       },
       "is_incremental": false,
@@ -1874,7 +1874,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/cs-peerconnection.html",
-          "hash": "aspLB8QLl9T0Y7F4aZfJIiMxARhVbV4igb5xNeqNoAU="
+          "hash": "ePKAMIE6i6Ce22RrZLQu/OteC3DUZbwcoEQzsQZ/pbw="
         }
       },
       "is_incremental": false,
@@ -1886,7 +1886,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/cs-signaling.html",
-          "hash": "FUi+dWq7EDHWMN5RmQzInxPCQOkMbHTGXf5kRa+nvIg="
+          "hash": "IZgR36FUyOP+QK0HwedZegV8QIz/rGWjXrMokTCy6d0="
         }
       },
       "is_incremental": false,
@@ -2052,7 +2052,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/cs.html",
-          "hash": "/hYwoJPRWzYMt9KP9Br+mPZaTqT26a/CSaBnBxytUD8="
+          "hash": "3qbnS9cBJGrX4o9f1EgY1e9WFUkB3xPN/xEK6VF2hY4="
         }
       },
       "is_incremental": false,
@@ -2141,7 +2141,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-connection-core3.html",
-          "hash": "Zc4hW7VUEo0ZX+Qee7IRTlnkKwvOzNMqUSqhcsYiEVI="
+          "hash": "+3ODrBi1IFD19mrJFmu++Fc+pZ7eDlgSBt2EODWaAh4="
         }
       },
       "is_incremental": false,
@@ -2153,7 +2153,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-connection-uwp.html",
-          "hash": "b0TXDScApAr0DSIfo7Hkk5W/fJwE71heCCVT2S9YthY="
+          "hash": "KhgFyEcDiraPm57K8TxPTl61CYbCwF8JcSb45onbKns="
         }
       },
       "is_incremental": false,
@@ -2165,7 +2165,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-core3.html",
-          "hash": "gWaywdhLGH+9KjPfe7ifBNiCRGdtDS0tiS42p/mN//k="
+          "hash": "yLc33CtIOeg8RBn7nrCYZoeEJVvnWXMvV1dopgdx8Us="
         }
       },
       "is_incremental": false,
@@ -2177,7 +2177,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-mediatracks-core3.html",
-          "hash": "mk1wgbkdLFyhwo1gE/5FytIDnLEmS7tw4x8zcRtrrp8="
+          "hash": "Y87fVBXtQeohcvqj2qZAHwqBj5/Rm37wUY+Xm3MYjQo="
         }
       },
       "is_incremental": false,
@@ -2189,7 +2189,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-mediatracks-uwp.html",
-          "hash": "QfQgUkpiujIWj4CYDXSXNCXNo5eY7UNM5w83dxj9KlI="
+          "hash": "THBsLL9IUv5KsaXyMstkzlJmvE7hl1tDuKZcHjCqids="
         }
       },
       "is_incremental": false,
@@ -2201,7 +2201,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-peerconnection-core3.html",
-          "hash": "3glwuFrcXtt4v42uH5opnmaA/nb5rIT9z7zLkBGTO/8="
+          "hash": "21m/sSR3mc0LJur+3uJwYgVo0Rn+ovXdUR+zqqxfSQk="
         }
       },
       "is_incremental": false,
@@ -2213,7 +2213,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-peerconnection-uwp.html",
-          "hash": "ptbKMUiqdeMxNSsYYaXnSXGFMEi61azTNlJG2IbSz5U="
+          "hash": "u1TWR0kzFVUZ2WmcSy/0yk/BLyGpIeAefhcSMq9QjpE="
         }
       },
       "is_incremental": false,
@@ -2225,7 +2225,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-setup-core3.html",
-          "hash": "soIrMD2sJaahN9dVN7E9qTvBEYR6iarw5wOGTFr1OCE="
+          "hash": "3YSw5kNbwQuq3Y/XDFZAsvl9aNaUo+KPcSwGUm+bK58="
         }
       },
       "is_incremental": false,
@@ -2237,7 +2237,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-setup-uwp.html",
-          "hash": "bbtddHiTB5D+W5b7uAp7v0hBGmZmhVaE6yt1cryTCoE="
+          "hash": "8IhbALE8aNw56CSFnib24N3D35b9gTFRRjtOAd/ubDs="
         }
       },
       "is_incremental": false,
@@ -2249,7 +2249,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-signaling-core3.html",
-          "hash": "bHCj+tuUIfuo3RqfXYTSK10ihoehXEnfY0vT5GG0rE0="
+          "hash": "jiJniR9/VFUXnri4tLHcVmTxeiNQ9bNDQK+Eh4mXTgc="
         }
       },
       "is_incremental": false,
@@ -2261,7 +2261,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-signaling-uwp.html",
-          "hash": "nj4TLvwNiFI/NacUb7YzfKOPOFcGE1l0uKKfTWpjd1c="
+          "hash": "fkLwsZeU1oC9rruAkFNfsZczfPOa/W7TWuk8dcuPfz8="
         }
       },
       "is_incremental": false,
@@ -2273,7 +2273,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-uwp.html",
-          "hash": "HLxOM88Cg8odtgdqq/rpOCgjrqw0Zy1h0ASSOXCYMSA="
+          "hash": "S0rfemnv71cz/ViE8V7lgbwxtM72dpTnQW0mguUcotM="
         }
       },
       "is_incremental": false,
@@ -2285,7 +2285,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/download.html",
-          "hash": "lNPsW2FCvN1F6698Xv8mA1BRMWtJKL6PuvGfNbDWPbg="
+          "hash": "hYYgjP8GpRm+8411BOBqBv6bSj+MS8lG2MHCm7ZxMk8="
         }
       },
       "is_incremental": false,
@@ -2297,7 +2297,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/gettingstarted.html",
-          "hash": "KAmv/tPCnMwbQWnQq0WY7Q8R8OMM/63hl8XlWnxkzhE="
+          "hash": "rdi4svXB6Cbf8XrsOUjyyd2Y3daDOhWBCaRSRqLFsnE="
         }
       },
       "is_incremental": false,
@@ -2309,7 +2309,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/glossary.html",
-          "hash": "Y7mtkAL9P4wSlNXL2TAnsjHmoAthQsSR3Tv2liNc/uI="
+          "hash": "qtEIyZoISvzaLHNRCbS4lNBvyUNw1x1klBdceYpipNc="
         }
       },
       "is_incremental": false,
@@ -2343,7 +2343,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/installation.html",
-          "hash": "9UmtccuDQm4/vHmLPOEEsU27xGKY1yRinmxlvozz3AA="
+          "hash": "DswP2043W8U9wqin2SDjIS+O6pErDYXIHlBM6NIBvUc="
         }
       },
       "is_incremental": false,
@@ -2355,7 +2355,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/introduction.html",
-          "hash": "quoZat2ok7sO0mDjeFi3D4ZTGotYj6ZqRsBYJjWtyO4="
+          "hash": "GfmU3Pin3xf0k+Ui7zokv3bx5LG/rkE1rRpW8jNRTPA="
         }
       },
       "is_incremental": false,
@@ -2367,7 +2367,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/migration-guide.html",
-          "hash": "fCJ0LTb5kxNrbCsYMlOABCWYjQAOg3cc17NIk6rux6k="
+          "hash": "Qr06Ae1/ivp8ANZ8djYt7ENeqKFE3JyvrmOM9MwUJoE="
         }
       },
       "is_incremental": false,
@@ -2644,7 +2644,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/helloworld-unity-connection.html",
-          "hash": "Vx7IGBTdkrKESoOWsCC61uns4e0ZvRra5p49fgukshY="
+          "hash": "yQ9yb7UlxUrm2mEqYvN9O0LKtL+sgB+0CocpqHTUPYY="
         }
       },
       "is_incremental": false,
@@ -2656,7 +2656,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/helloworld-unity-createproject.html",
-          "hash": "VkFDG6avr/IFLySHFygBIAlGXUw0ljf+2aKVBfY5TSk="
+          "hash": "SNhogwTkWJ9d+W5rBNFZMtyLy5WRFcW5YrskdStcrEY="
         }
       },
       "is_incremental": false,
@@ -2668,7 +2668,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/helloworld-unity-importwebrtc.html",
-          "hash": "7LYrgP62kCHi0EOLaaBRkUgPzr/8FCBrs8Chd1fBMY4="
+          "hash": "2ySbeo6ALTZFVO3qb45ehU7/rRWeKpdP9UU8X5dEkO8="
         }
       },
       "is_incremental": false,
@@ -2680,7 +2680,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/helloworld-unity-localvideo.html",
-          "hash": "kPmgaRLWRV3Rompu+NJQS47DCTjP1tFtbG0CZqIgFQY="
+          "hash": "/+RgqGKgvR6zcC3lsxBOWvE0GTiUdQkVd5uRWOLMnKE="
         }
       },
       "is_incremental": false,
@@ -2692,7 +2692,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/helloworld-unity-peerconnection.html",
-          "hash": "FCljQdgKQdDqRQK8GUH2S4+4e2vh3q/PHQPPQpqOKes="
+          "hash": "YIokBCiyPrMrm6ufj64Lyn2IYPvbX3KKiiCJmNG3HAw="
         }
       },
       "is_incremental": false,
@@ -2704,7 +2704,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/helloworld-unity-remotevideo.html",
-          "hash": "gz8/TL1chm311l7V/FdybDQhJqNkEbo7zQNfw88boH8="
+          "hash": "ZoTrq/fNPEgAeYG+b+RXI8AWFciVMA92agcPi0WBOKo="
         }
       },
       "is_incremental": false,
@@ -2716,7 +2716,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/helloworld-unity-signaler.html",
-          "hash": "SENtJ//iZ25fbR+3PAC+v0iavenLyGDBLakf0EL6txg="
+          "hash": "CG17JB42ezKBXQaunI56EIibeyoi3z3/Hea0TofiDYQ="
         }
       },
       "is_incremental": false,
@@ -2728,7 +2728,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/helloworld-unity.html",
-          "hash": "1EKVvL5R0OkzOodLd+PFS8hkcsFXferbyErSM6mLaBg="
+          "hash": "NmEbdYdUjrbaj8p9uZkiZL/XezfCfCzMteMs1kziyLU="
         }
       },
       "is_incremental": false,
@@ -2740,7 +2740,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/unity-audioreceiver.html",
-          "hash": "hBndwV+LyQuY9G1ueD1sWk1x1AHYDoZ6oONo2s618do="
+          "hash": "T3QQQkredNmDh0UrWvj+mWTd6SsLwxr5xd+f37J+ys0="
         }
       },
       "is_incremental": false,
@@ -2796,7 +2796,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/unity-components.html",
-          "hash": "5wqiaLZe8+0pvNj60HRip+//NUodduNqmcY20wkiOx4="
+          "hash": "8W1TVm8PK1IE54cunJqIz4i7sjFkBxsl0gUitew50SA="
         }
       },
       "is_incremental": false,
@@ -2819,7 +2819,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/unity-integration.html",
-          "hash": "zGvab8l7bGl87DWCAHlmpZGKbmELYMr7RTBWZ/to4zY="
+          "hash": "eouTc+zeZf0sk6YED6az59H7STRvxRbm5Oogc2+qZBc="
         }
       },
       "is_incremental": false,
@@ -2831,7 +2831,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/unity-localvideosource.html",
-          "hash": "0R+Aj3+BpALNZLEfHKNYJk3ydd+7eFZXuMTJCusmF/M="
+          "hash": "gT79mxivm6tMLEUy/ntD6uNU8Hj2ZonuvqGD8IXazW0="
         }
       },
       "is_incremental": false,
@@ -2854,7 +2854,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/unity-mediaplayer.html",
-          "hash": "n49gTfSG1QWb7tdaf2slv4IXfbpc+ZsaOKIuD6CiBfk="
+          "hash": "XZdpJlS0hjnxWMN8BqvzlB1GfNOk8fUp5OAyRULeOzA="
         }
       },
       "is_incremental": false,
@@ -2877,7 +2877,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/unity-microphonesource.html",
-          "hash": "HN1fFQeHdtS5Zx8P+Scs3NSB5N3myz9ZulKl8BJHUdU="
+          "hash": "j7ZwhUmSTjFl64dItSIursuwLFYr1W1WD94+muk6h9E="
         }
       },
       "is_incremental": false,
@@ -2911,7 +2911,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/unity-peerconnection.html",
-          "hash": "N17S78rK908HVSBCe1jSicGRAyIPvgiBYLYjkfvrnsQ="
+          "hash": "woPvAtgSOKGH7dnLdidchYW7+Ht9/ronc1qcApTP0DE="
         }
       },
       "is_incremental": false,
@@ -2934,7 +2934,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/unity-remotevideosource.html",
-          "hash": "0XhdzvKlc4ClNRK3oB2Uz4C/l3qlqaXKPXsWv6qdaok="
+          "hash": "KEjvALfsFXCL/392QxliVB+tIZJFz8NSvJUPjMqNaIQ="
         }
       },
       "is_incremental": false,
@@ -2957,7 +2957,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/unity-signaler.html",
-          "hash": "y8kFU80nETPjOo5+QsToonFME/C8YhDNLHTQg1RhNdE="
+          "hash": "c1Ogx9QtAY3ugW3Q2/pIMNjMOKCx0aw0MmnpOiAbdpI="
         }
       },
       "is_incremental": false,
