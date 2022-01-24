@@ -1,6 +1,6 @@
 # Creating a peer connection
 
-From this point we start building the scene. Because the MixedReality-WebRTC components are installed, and because we work now almost exclusively inside Unity, for brievety we will use the term _component_ to designate a Unity component, that is a class deriving from [`MonoBehaviour`](https://docs.unity3d.com/ScriptReference/MonoBehaviour.html).
+From this point we start building the scene. Because the MixedReality-WebRTC components are installed, and because we work now almost exclusively inside Unity, for brevity we will use the term _component_ to designate a Unity component, that is a class deriving from [`MonoBehaviour`](https://docs.unity3d.com/ScriptReference/MonoBehaviour.html).
 
 Create a new [`GameObject`](https://docs.unity3d.com/ScriptReference/GameObject.html) with a [`PeerConnection`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection) component:
 

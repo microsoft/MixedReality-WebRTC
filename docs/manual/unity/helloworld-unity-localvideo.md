@@ -19,13 +19,13 @@ Capturing some video feed from a local video capture device is covered by the [`
 > [!NOTE]
 > The term _webcam_ as used in the context of the [`WebcamSource`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource) component colloquially refers to any _local video capture device_, and is an abuse of language to shorten the latter. This term therefore includes other capture devices not strictly considered webcams, like for example the HoloLens 1 and HoloLens 2 cameras, or an Android phone built-in camera.
 
-Because the [`WebcamSource`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource) component derives from the abstract [`VideoTrackSource`](xref:Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource) component which encapsulates a WebRTC video track source, that source can be attached to a media line of a peer connection. By doing so, the media line will automatically create and manage a local video track, which covers the second concept of streaming video to a remote peer.
+Because the [`WebcamSource`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource) component derives from the abstract [`VideoTrackSource`](xref:Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource) component, which encapsulates a WebRTC video track source, that source can be attached to a media line of a peer connection. By doing so, the media line will automatically create and manage a local video track, which covers the second concept of streaming video to a remote peer.
 
-Finally, the [`VideoTrackSource`](xref:Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource) component can also be renderer locally (in parallel of being streamed to the remote peer) via an optional video player, covering the last concept if needed.
+Finally, the [`VideoTrackSource`](xref:Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource) component can also be rendered locally (in parallel to being streamed to the remote peer) via an optional video player, covering the last concept if needed.
 
 ## Adding a webcam source
 
-For clarity we will create a new game object and add a [`WebcamSource`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource) component. It may sound superfluous at the moment to create a new game object, as we could add the webcam source to the same game object already owning the peer connection component, but this will prove more clear and easy to manipulate later.
+For clarity, we will create a new game object and add a [`WebcamSource`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource) component. It may sound superfluous at the moment to create a new game object, as we could add the webcam source to the same game object already owning the peer connection component, but this will prove more clear and easy to manipulate later.
 
 - In the **Hierarchy** window, select **Create** > **Create Empty**.
 - In the **Inspector** window, rename the newly-created game object to something memorable like "LocalVideoPlayer".
@@ -42,7 +42,7 @@ The webcam source component contains several interesting properties. We detail t
 
 The video capture properties configure how the component accesses the webcam and captures video frames from it, independently of WebRTC.
 
-- The **Capture format** combobox, which corresponds to the [`WebcamSource.FormatMode`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource.FormatMode) property, allows switching between two different modes to control how the _video capture format_ (resolution and framerate, essentially) is choosen:
+- The **Capture format** combobox, which corresponds to the [`WebcamSource.FormatMode`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource.FormatMode) property, allows switching between two different modes to control how the _video capture format_ (resolution and framerate, essentially) is chosen:
 
   - In **Automatic** mode, the best video capture format is automatically selected.
 
@@ -52,7 +52,7 @@ The video capture properties configure how the component accesses the webcam and
 
     This allows restricting the video capture formats the selection algorithm can choose from to a subset of all the formats supported by the video capture device, and even to a single known format if needed. Note however that over-constraining the algorithm may result in no format being available, and the [`WebcamSource`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource) component failing to open the video capture device.
 
-    In general it is recommended **not** to assign hard-coded resolution / framerate constraints at edit time, unless the application only target a specific kind of device with well-known immutable capture capabilities, and instead enumerate at runtime with [`DeviceVideoTrackSource.GetCaptureFormatsAsync()`](xref:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String)) the capture formats actually supported by the video capture device, then use constraints to select one or some of those formats.
+    In general it is recommended **not** to assign hard-coded resolution / framerate constraints at edit time, unless the application only targets a specific kind of device with well-known immutable capture capabilities. Instead it is recommended to enumerate at runtime with [`DeviceVideoTrackSource.GetCaptureFormatsAsync()`](xref:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String)) the capture formats actually supported by the video capture device, then use constraints to select one or some of those formats.
 
 - The **Enable Mixed Reality Capture (MRC)** checkbox, which corresponds to the [`WebcamSource.EnableMixedRealityCapture`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource.EnableMixedRealityCapture) property, tells the component it should attempt to open the video capture device with MRC enabled, if supported. If the device does not support MRC, then this is silently ignored.
 
@@ -110,7 +110,7 @@ Let's add a [`VideoRenderer`](xref:Microsoft.MixedReality.WebRTC.Unity.VideoRend
 
 - In the **Inspector** window, press the **Add Component** button at the bottom of the window, and select **MixedReality-WebRTC** > **VideoRenderer**
 
-This time however Unity will not create the component, and instead display a somewhat complex error message:
+This time, however, Unity will not create the component. It will instead display a somewhat complex error message:
 
 ![Unity displays an error message when trying to create a MediaPlayer component](helloworld-unity-9.png)
 
@@ -122,7 +122,7 @@ So for each component, in the **Inspector** window, press the **Add Component** 
 2. **Mesh** > **Mesh Renderer**
 3. **MixedReality-WebRTC** > **Video Renderer**
 
-After that, set the component properties as follow:
+After that, set the component properties as follows:
 
 - In the **Mesh Filter** component, set the **Mesh** property to the built-in Unity **Quad** mesh. This is a simple square mesh on which the texture containing the video feed will be applied.
 - The built-in **Quad** mesh size is quite small for rendering a video, so go to the **Transform** component and increase the scale to `(4,3,1)`. This will produce a 4:3 aspect ratio for the mesh, which is generally, if not equal to, at least pretty close to the actual video frame aspect ratio, and therefore will reduce/prevent distorsions.

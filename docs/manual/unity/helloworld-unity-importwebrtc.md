@@ -15,7 +15,7 @@ The Unity library is distributed as a package containing all those components, i
 > [!NOTE]
 > If an existing Unity project manifest already contains a `Microsoft Mixed Reality` entry in the `scopedRegistries` section, is is recommended that it be removed.
 
-In the following, we describe the latter method, which essentially consists in manually replicating the steps that the Mixed Reality Feature Tool would oherwise perform automatically for you.
+In the following, we describe the latter method, which essentially consists in manually replicating the steps that the Mixed Reality Feature Tool would otherwise perform automatically for you.
 
 - Download the latest release of the `com.microsoft.mixedreality.webrtc` package (`.tgz` archive) from [the GitHub Releases page](https://github.com/microsoft/MixedReality-WebRTC/releases). Direct donwload links are available at the bottom of each release section under the Assets drop-down list.
 
