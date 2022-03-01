@@ -135,6 +135,10 @@ The current version is a public preview which contains known issues:
 
 In addition, the Debug config of WebRTC core implementation is known to exhibit some performance issues on most devices, including some higher-end PCs. Using the Release config of the core WebRTC implementation usually prevents this, and is strongly recommended when not debugging.
 
+## Microsoft Open Source Code of Conduct
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
 ## Reporting security issues and bugs
 
 MixedReality-WebRTC builds upon the WebRTC implementation provided by Google. Security issues and bugs related to this implementation should be reported to Google.
