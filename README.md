@@ -16,9 +16,17 @@ MixedReality-WebRTC is a collection of libraries to help mixed reality app devel
 
 MixedReality-WebRTC is part of the collection of repositories developed and maintained by the [Mixed Reality Sharing team](https://github.com/orgs/microsoft/teams/mixed-reality-sharing).
 
-## Notice
+<span style="color:red">## **Caution**</span>
 
-**We're no longer committing development resources to the MR-WebRTC project, taking pull requests for it, or planning a replacement for it. If you want to continue updating it, you must fork and maintain your own branch.**
+<span style="color:red">**We're no longer committing development resources to the MR-WebRTC project, taking pull requests for it, or planning a replacement for it.**</span>
+
+If you want to continue updating it, you must fork and maintain your own branch.
+
+Known issues with the current branch:
+
+**Camera share mode**: There's a workaround for this--you can open in exclusive mode.  
+**Arm64**: Not supported by Google. Can't be used without significant work.  
+**H.265**: Not supported by Google. Can't be used without significant work.
 
 ## Download
 
