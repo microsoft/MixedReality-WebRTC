@@ -18,7 +18,7 @@ MixedReality-WebRTC is part of the collection of repositories developed and main
 
 <h2><b><span style="color:red">Caution</span></b></h2>
 
-<span style="color:red">**We're no longer committing development resources to the MR-WebRTC project, taking pull requests for it, or planning a replacement for it.**</span>
+<span style="color:red">**WebRTC has been deprecated. We're no longer committing development resources to the MR-WebRTC project, taking pull requests for it, or planning a replacement for it.**</span>
 
 If you want to continue updating it, you must fork and maintain your own branch.
 
