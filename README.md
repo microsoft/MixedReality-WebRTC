@@ -24,7 +24,7 @@ If you want to continue updating it, you must fork and maintain your own branch.
 
 Known issues with the current branch:
 
-**Camera performance**: The camera won't work if other applications are using it (for example, Guides, RA).
+**Camera performance**: The camera won't work if other applications are using it (for example, Guides, RA).  
 **Camera share mode**: There's a workaround for this--you can open in exclusive mode.  
 **Arm64**: Not supported by Google. Can't be used without significant work.  
 **H.265**: Not supported by Google. Can't be used without significant work.
