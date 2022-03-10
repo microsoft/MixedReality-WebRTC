@@ -16,7 +16,7 @@ MixedReality-WebRTC is a collection of libraries to help mixed reality app devel
 
 MixedReality-WebRTC is part of the collection of repositories developed and maintained by the [Mixed Reality Sharing team](https://github.com/orgs/microsoft/teams/mixed-reality-sharing).
 
-<span style="color:red">## **Caution**</span>
+<h2><b><span style="color:red">Caution</span></b></h2>
 
 <span style="color:red">**We're no longer committing development resources to the MR-WebRTC project, taking pull requests for it, or planning a replacement for it.**</span>
 
