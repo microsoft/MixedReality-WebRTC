@@ -18,16 +18,17 @@ MixedReality-WebRTC is part of the collection of repositories developed and main
 
 <h2><b><span style="color:red">Caution</span></b></h2>
 
-<span style="color:red">**WebRTC has been deprecated. We're no longer committing development resources to the MR-WebRTC project, taking pull requests for it, or planning a replacement for it.**</span>
+<span style="color:red">**MR-WebRTC has been deprecated. We're no longer committing development resources to it, taking pull requests for it, or planning a replacement for it.**</span>
 
-If you want to continue updating it, you must fork and maintain your own branch.
+
 
 Known issues with the current branch:
 
-**Camera performance**: The camera won't work if other applications are using it (for example, Guides, RA).  
-**Camera share mode**: There's a workaround for this--you can open in exclusive mode.  
-**Arm64**: Not supported by Google. Can't be used without significant work.  
-**H.265**: Not supported by Google. Can't be used without significant work.
+- If you want to continue updating it, you must fork and maintain your own branch.
+- **Camera performance**: The camera won't work if other applications are using it (for example, Guides, RA).  
+- **Camera share mode**: There's a workaround for this--you can open in exclusive mode.  
+- **Arm64**: Not supported by Google.  
+- **H.265**: Not supported by Google. Can't be used without significant work.
 
 ## Download
 
