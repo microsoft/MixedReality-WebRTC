@@ -25,7 +25,7 @@ Known issues with the current branch:
 - If you want to continue updating it, you must fork and maintain your own branch.
 - **Camera performance**: The camera won't work if other applications are using it (for example, Guides, RA).  
 - **Camera share mode**: There's a workaround for this--you can open in exclusive mode.  
-- **ARM64 build**: Not supported by WebRTC m71/WebRTC UWP SDK.
+- **ARM64 build**: Not supported by Google.
 - **H.265**: Not supported by WebRTC m71/WebRTC UWP SDK.
 
 ## Download
