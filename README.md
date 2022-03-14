@@ -20,13 +20,7 @@ MixedReality-WebRTC is part of the collection of repositories developed and main
 
 <span style="color:red">**MR-WebRTC has been deprecated. We're no longer committing development resources to it, taking pull requests for it, or planning a replacement for it.**</span>
 
-Known issues with the current branch:
-
 - If you want to continue updating it, you must fork and maintain your own branch.
-- **Camera performance**: The camera won't work if other applications are using it (for example, Guides, RA).  
-- **Camera share mode**: There's a workaround for this--you can open in exclusive mode.  
-- **ARM64 build**: Not supported by WebRTC m71/WebRTC UWP SDK.
-- **H.265**: Not supported by WebRTC m71/WebRTC UWP SDK.
 
 ## Download
 
@@ -136,6 +130,9 @@ See the user manual section on [Building from sources](https://microsoft.github.
 
 The current version is a public preview which contains known issues:
 
+- By default, the WebRTC UWP implementation accesses video capture devices on the system in exclusive mode. This will cause an error when enabling video capture if another application is using the device.
+- ARM64 build: Not supported by WebRTC m71/WebRTC UWP SDK.
+- H.265: Not supported by WebRTC m71/WebRTC UWP SDK.
 - HoloLens 2 exhibits some small performance penalty due to the [missing support (#157)](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/157) for SIMD-accelerated YUV conversion in WebRTC UWP SDK on ARM.
 - H.264 hardware video encoding (UWP only) exhibits some quality degrading (blockiness). See [#74]((https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/74)) and [#153]((https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/153)) for details.
 - H.264 is not currently available on Desktop at all (even in software). Only VP8 and VP9 are available instead (software encoding/decoding).
@@ -150,3 +147,5 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 ## Reporting security issues and bugs
 
 MixedReality-WebRTC builds upon the WebRTC implementation provided by Google. Security issues and bugs related to this implementation should be reported to Google.
+
+Security issues and bugs related to MixedReality-WebRTC itself or to WebRTC UWP SDK should be reported privately, via email, to the Microsoft Security Response Center (MSRC) secure@microsoft.com. You should receive a response within 24 hours. If for some reason you do not, please follow up via email to ensure we received your original message. Further information, including the MSRC PGP key, can be found in the [Security TechCenter](https://technet.microsoft.com/en-us/security/ff852094.aspx).
