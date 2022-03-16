@@ -8,6 +8,12 @@ This is the MixedReality-WebRTC documentation for [the `master` branch](https://
 
 For the documentation corresponding to other branches, including [the `release/1.0` branch](https://github.com/microsoft/MixedReality-WebRTC/tree/release/1.0/) from which the NuGet 1.x packages are built, use the drop-down selection at the top right of this page.
 
+<h2><b><span style="color:red">Caution</span></b></h2>
+
+<span style="color:red">**MR-WebRTC has been deprecated. We're no longer committing development resources to it, taking pull requests for it, or planning a replacement for it.**</span>
+
+- If you want to continue updating it, you must fork and maintain your own branch.
+
 ## User Manual
 
 [Introduction](manual/introduction.md)
