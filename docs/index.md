@@ -16,8 +16,6 @@ For the documentation corresponding to other branches, including [the `release/1
 
 ## User Manual
 
-[Introduction](manual/introduction.md)
-
 - C# library
   - [Feature Overview](manual/cs/cs.md)
   - [Tutorial (Desktop)](manual/cs/helloworld-cs-core3.md)
