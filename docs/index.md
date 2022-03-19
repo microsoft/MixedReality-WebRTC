@@ -18,15 +18,6 @@ For the documentation corresponding to other branches, including [the `release/1
 
 [Introduction](manual/introduction.md)
 
-- Getting started
-  - [Download](manual/download.md)
-  - [Installation](manual/installation.md)
-  - [Migration Guide](manual/migration-guide.md)
-  - [Building from sources](manual/building.md)
-  - [C# tutorial (Desktop)](manual/cs/helloworld-cs-core3.md)
-  - [C# tutorial (UWP)](manual/cs/helloworld-cs-uwp.md)
-  - [Unity tutorial](manual/unity/helloworld-unity.md)
-  - [Glossary](manual/glossary.md)
 - C# library
   - [Feature Overview](manual/cs/cs.md)
   - [Tutorial (Desktop)](manual/cs/helloworld-cs-core3.md)
