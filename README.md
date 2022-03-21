@@ -3,7 +3,6 @@
 [![Licensed under the MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/microsoft/MixedReality-WebRTC/blob/master/LICENSE)
 [![Holodevelopers channel on Slack](https://img.shields.io/badge/slack-@holodevelopers-%23972299.svg?logo=slack)](https://holodevelopers.slack.com/messages/CN1A7JB3R)
 [![NuGet](https://img.shields.io/nuget/vpre/Microsoft.MixedReality.WebRTC)](https://github.com/microsoft/MixedReality-WebRTC/releases)
-[![Under active development](https://img.shields.io/badge/status-active-green.svg)](https://github.com/microsoft/MixedReality-WebRTC/commits/master)
 
 MixedReality-WebRTC is a collection of libraries to help mixed reality app developers to integrate peer-to-peer real-time audio and video communication into their application and improve their collaborative experience.
 
@@ -16,31 +15,23 @@ MixedReality-WebRTC is a collection of libraries to help mixed reality app devel
 
 MixedReality-WebRTC is part of the collection of repositories developed and maintained by the [Mixed Reality Sharing team](https://github.com/orgs/microsoft/teams/mixed-reality-sharing).
 
-## Notice
+<h2><b><span style="color:red">Caution</span></b></h2>
 
-**With the announcement of Microsoft Mesh, we want to provide an update regarding our plans for the future of the MR-WebRTC project. Microsoft Mesh provides a fabric to enable collaborative scenarios for mixed reality that span across multiple platforms and endpoints and has additional features and capabilities beyond what is covered by the MR-WebRTC project. With that in mind, we have decided to scale back our development resources in the MR-WebRTC project and focus those resources into providing a great platform with Microsoft Mesh. For additional information about Microsoft Mesh, please check out our technical overview at [https://techcommunity.microsoft.com/t5/mixed-reality-blog/microsoft-mesh-a-technical-overview/ba-p/2176004](https://techcommunity.microsoft.com/t5/mixed-reality-blog/microsoft-mesh-a-technical-overview/ba-p/2176004).**
- 
-**While we are reducing our development investment in MR-WebRTC, we will continue to host it as a project, and accept pull-requests for the project. We also encourage anyone wishing to continue to develop the project to fork it and move forward with it.**
- 
-**If anyone has any questions, please feel free to reach out to Jesse McCulloch from our Developer Ecosystem team at [jemccull@microsoft.com](mailto:jemccull@microsoft.com).**
+<span style="color:red">**MR-WebRTC has been deprecated. We're no longer committing development resources to it, taking pull requests for it, or planning a replacement for it.**</span>
 
+- If you want to continue updating it, you must fork and maintain your own branch.
 
 ## Download
 
 NuGet (C++, C#) and UPM (Unity) packages are available for stable releases (`release/*` branches). See the [Release page on GitHub](https://github.com/microsoft/MixedReality-WebRTC/releases) or the [Download documentation page](https://microsoft.github.io/MixedReality-WebRTC/manual/download.html) for details.
 
-_Note_: The `master` branch contains the code for the next release, and therefore sometimes contains breaking API changes from the latest stable release. It is therefore not guaranteed to work with NuGet packages, which are only available for stable releases. In particular, the Unity library scripts are only guaranteed to be compatible with NuGet packages if copied from a `release/*` branch, though it is strongly recommended to use the UPM packages instead.
+_Note_: The `master` branch may contain breaking API changes from the latest stable release. It's  therefore not guaranteed to work with NuGet packages, which are only available for stable releases. In particular, the Unity library scripts are only guaranteed to be compatible with NuGet packages if copied from a `release/*` branch, though it is strongly recommended to use the UPM packages instead.
 
-## Build Status
-
-| Branch | WebRTC | API | C library (`mrwebrtc`) | C# Library | Docs |
-|---|---|---|---|---|---|
-| [`release/2.0`](https://github.com/microsoft/MixedReality-WebRTC/tree/release/2.0) | [M71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Stable | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-cpp-ci?branchName=release/2.0)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=24&branchName=release/2.0) | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-cs-ci?branchName=release/2.0)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=25&branchName=release/2.0) | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-docs-ci?branchName=release/2.0)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=26&branchName=release/2.0) |
-| [`master`](https://github.com/microsoft/MixedReality-WebRTC/tree/master) | [M71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Unstable | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-cpp-ci?branchName=master)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=24&branchName=master) | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-cs-ci?branchName=master)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=25&branchName=master) | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-docs-ci?branchName=master)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=26&branchName=master) |
+## Branches
 
 The [`release/2.0` branch](https://github.com/microsoft/MixedReality-WebRTC/tree/release/2.0) contains the latest stable version of the API, from which the NuGet and UPM packages are published.
 
-The [`master` branch](https://github.com/microsoft/MixedReality-WebRTC/tree/master) contains the current up-to-date code with latest developments. Care is generally taken to keep this branch in a fairly clean state (branch can build, tests pass). However the `master` branch contains API breaking changes compared to the latest release, and therefore is not compatible with NuGet/UPM packages and should be built from sources instead (see [Building from sources](https://microsoft.github.io/MixedReality-WebRTC/manual/building.html) documentation).
+The [`master` branch](https://github.com/microsoft/MixedReality-WebRTC/tree/master) contains the latest developments. Care has been taken to keep this branch in a fairly clean state (branch can build, tests pass). However the `master` branch contains API breaking changes compared to the latest release, and therefore is not compatible with NuGet/UPM packages and should be built from sources instead (see [Building from sources](https://microsoft.github.io/MixedReality-WebRTC/manual/building.html) documentation).
 
 ## Documentation
 
@@ -48,7 +39,7 @@ The official documentation is hosted at [https://microsoft.github.io/MixedRealit
 
 ### User Manual
 
-The [User Manual](https://microsoft.github.io/MixedReality-WebRTC/manual/introduction) contains a general overview of the various libraries of the project, and some tutorials on how to use them.
+The [User Manual](https://microsoft.github.io/MixedReality-WebRTC/manual/introduction) contains a general overview of the various libraries of the project and some tutorials on how to use them.
 
 - The [_Hello, Unity world!_](https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity) tutorial introduces the Unity integration by building a simple audio and video chat client.
 - The C# tutorials introduce the .NET Standard 2.0 C# API, which can be used outside Unity.
@@ -61,10 +52,6 @@ An [API reference](https://microsoft.github.io/MixedReality-WebRTC/api/Microsoft
 
 - [C# library API reference](https://microsoft.github.io/MixedReality-WebRTC/api/Microsoft.MixedReality.WebRTC.html)
 - [Unity integration reference](https://microsoft.github.io/MixedReality-WebRTC/api/Microsoft.MixedReality.WebRTC.Unity.html)
-
-## Getting Started
-
-MixedReality-WebRTC is a set of individual building blocks in the form of C and C# libraries building upon each other to deliver a consistent API to C/C++ and C# developers across its supported platforms, and a set of handful drop-in Unity3D components for easy integration. The pure C library allows easy integration as a shared module (DLL) into C/C++ projects while avoiding issues with compiler and CRT variants.
 
 ### Overview
 
@@ -127,12 +114,15 @@ See the user manual section on [Building from sources](https://microsoft.github.
   - **MRC requires special permission** to record the content of the screen:
     - For shared apps (2D slates), this corresponds to the `screenDuplication` [restricted capability](https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations#restricted-capabilities), which **cannot be obtained by third-party applications**. In short, MRC is not available for shared apps. This is an OS limitation.
     - For exclusive-mode apps (fullscreen), there is no particular UWP capability, but the recorded content is limited to the application's own content.
-- Be sure to use `PreferredVideoCodec = "H264"` to avail of the hardware encoder present on the device; software encoding with _e.g._ VP8 or VP9 codecs is very CPU intensive and strongly discouraged.
+- Be sure to use `PreferredVideoCodec = "H264"` to make use of the hardware encoder present on the device; software encoding with _e.g._ VP8 or VP9 codecs is very CPU intensive and strongly discouraged.
 
 ## Known Issues
 
-The current version is a public preview under active development, which contains known issues being addressed:
+The current version is a public preview which contains known issues:
 
+- By default, the WebRTC UWP implementation accesses video capture devices on the system in exclusive mode. This will cause an error when enabling video capture if another application is using the device.
+- ARM64 build: Not supported by WebRTC m71/WebRTC UWP SDK.
+- H.265: Not supported by WebRTC m71/WebRTC UWP SDK.
 - HoloLens 2 exhibits some small performance penalty due to the [missing support (#157)](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/157) for SIMD-accelerated YUV conversion in WebRTC UWP SDK on ARM.
 - H.264 hardware video encoding (UWP only) exhibits some quality degrading (blockiness). See [#74]((https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/74)) and [#153]((https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/153)) for details.
 - H.264 is not currently available on Desktop at all (even in software). Only VP8 and VP9 are available instead (software encoding/decoding).
@@ -140,11 +130,7 @@ The current version is a public preview under active development, which contains
 
 In addition, the Debug config of WebRTC core implementation is known to exhibit some performance issues on most devices, including some higher-end PCs. Using the Release config of the core WebRTC implementation usually prevents this, and is strongly recommended when not debugging.
 
-## Contributing
-
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.microsoft.com.
-
-When you submit a pull request, a CLA-bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
+## Microsoft Open Source Code of Conduct
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
